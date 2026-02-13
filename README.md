@@ -4,16 +4,14 @@
 天下无双是一个温馨的大家庭社区，为成员提供一个交流、互动的平台。项目包含欢迎页面、用户列表展示、给会长的秘密告白等功能，旨在营造一个温暖、和谐的社区氛围。
 
 ## 项目信息
-- **服务器地址**：`https://www.wushuang.asia/`
-- **GitHub 地址**：`https://github.com/wuxuanok/TianXiaWuShuang`
+- **服务器地址**：[https://www.wushuang.asia/](https://www.wushuang.asia/)
+- **GitHub 地址**：[https://github.com/wuxuanok/TianXiaWuShuang](https://github.com/wuxuanok/TianXiaWuShuang)
 - **开发者联系方式**：
   - 微信：`wx2031610355`
   - QQ：`2031610355`
   - QQ 邮箱：`2031610355@qq.com`
-  - 网名：无双
 
 ---
-
 ## 1. 任务进度概览
 
 ### 基础功能需求
