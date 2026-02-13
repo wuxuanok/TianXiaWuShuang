@@ -1,0 +1,93 @@
+# 示例docker-compose，密码请替换为真实服务器的密码
+
+# 一键重新部署后端服务(不包环境): 换jar包然后 docker compose -p root up -d --build --no-deps recruitment-program
+# docker compose -p root pull recruitment-program
+# docker run -d --name recruitment-program -p 8080:8080 --network root_alwaysBeA recruitment-program
+# 定义服务
+
+# 强制重新创建所有容器，包括正在运行的容器
+#  docker-compose -p root up -d --build --force-recreate
+
+#  服务器上用.key和.crt在ssl目录下生成keystore.p12文件
+#  cd /path/to/xiao-a-recruitment-program/ssl
+#  openssl pkcs12 -export -out keystore.p12 -inkey smalla.cosh.fun.key -in smalla.cosh.fun_bundle.crt -name tomcat -password pass:YOUR_PASSWORD
+services:
+  # 应用服务
+  recruitment-program:
+    # 使用当前目录的Dockerfile构建镜像
+    build: .
+    # 容器名称
+    container_name: recruitment-program
+    # 端口映射：主机端口:容器端口
+    ports:
+      - "8443:8443"
+    # 依赖服务：确保mysql和redis在应用启动前启动
+    environment:
+      - SPRING_PROFILES_ACTIVE=prod
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql:3306/a_recruit?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=YOUR_PASSWORD
+      - SPRING_REDIS_HOST=redis
+      - SPRING_REDIS_PORT=6379
+      - SPRING_REDIS_PASSWORD=YOUR_PASSWORD
+      - SERVER_PORT=8443
+      - SERVER_SSL_ENABLED=true
+      - SERVER_SSL_KEY_STORE=/app/ssl/keystore.p12
+      - SERVER_SSL_KEY_STORE_PASSWORD=YOUR_PASSWORD
+      - SERVER_SSL_KEY_STORE_TYPE=PKCS12
+      - SERVER_SSL_KEY_ALIAS=tomcat
+    # 挂载SSL证书目录
+    volumes:
+      - ./ssl:/app/ssl
+    # 使用定义的网络
+    networks:
+      - alwaysBeA
+    # 重启策略：失败时自动重启
+    restart: unless-stopped
+
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - alwaysBeA
+    volumes:
+      - ./nginx/html:/usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+
+  mysql:
+    image: mysql:latest
+    container_name: mysql
+    environment:
+      TZ: Asia/Shanghai
+      MYSQL_ROOT_PASSWORD: YOUR_PASSWORD
+      MYSQL_DATABASE: a_recruit
+    ports:
+      - "3306:3306" #端口映射
+    volumes:
+      - ./mysql-data:/var/lib/mysql # 将数据目录挂在到本地目录以进行持久化
+      - ./mysql-init:/docker-entrypoint-initdb.d # 启动脚本
+      - ./mysql-conf/my.cnf:/etc/mysql/my.cnf # 配置一下,因为从window的数据库迁移到linux会出问题
+    restart: always #崩溃后重启
+    networks:
+      - alwaysBeA # 指定网络
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    command: redis-server --requirepass YOUR_PASSWORD
+    networks:
+      - alwaysBeA
+    volumes:
+      - ./.redis-data:/data #持久化
+
+# 定义网络，所有服务将使用此网络
+networks:
+  alwaysBeA:
+    driver: bridge

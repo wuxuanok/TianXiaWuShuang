@@ -1,0 +1,88 @@
+server:
+  port: ${SERVER_PORT:8080}
+
+# # 生成自签名证书并保存到 resources 目录
+#keytool -genkeypair -alias tomcat -keyalg RSA -keysize 2048 -keystore src\main\resources\keystore.p12 -validity 3650 -storetype PKCS12 -storepass changeit -dname "CN=localhost, OU=Development, O=Local, L=Local, ST=Local, C=CN"
+spring:
+  profiles:
+    active: dev
+  main:
+    allow-circular-references: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
+      file-size-threshold: 1MB # 超过该大小的文件会临时存到磁盘
+  #=====================Mysql配置 =====================
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
+    #===================== 连接池配置 =====================
+    hikari:
+      # 最大连接数（默认 10，建议 20-50，根据服务器配置调整）
+      maximum-pool-size: 30
+      # 最小空闲连接
+      minimum-idle: 10
+      # 获取连接的最大等待时间（毫秒），默认 30 秒，建议 10 秒快速失败
+      connection-timeout: 10000
+      # 连接空闲超时时间（毫秒），默认 600000（10 分钟）
+      idle-timeout: 600000
+      # 连接最大生命周期（毫秒），默认 1800000（30 分钟），建议小于 MySQL 的 wait_timeout（默认 8 小时）
+      max-lifetime: 1800000
+      # 连接测试 SQL（防止 MySQL 8 小时自动断开连接问题）
+      connection-test-query: SELECT 1
+      # 连接测试超时时间
+      validation-timeout: 3000
+
+#  redis:
+#    database: ${SPRING_REDIS_DATABASE:0}
+#    host: ${SPRING_REDIS_HOST}
+#    port: ${SPRING_REDIS_PORT:6379}
+#    password: ${SPRING_REDIS_PASSWORD:}
+#    timeout: ${SPRING_REDIS_TIMEOUT:3000}
+#    lettuce:
+#      pool:
+#        max-active: 8 # 连接池最大连接数
+#        max-wait: -1ms  # 连接池最大阻塞等待时间（使用负值表示没有限制）
+#        min-idle: 0 # 连接池中的最小空闲连接
+#        max-idle: 8 # 连接池中的最大空闲连接
+
+  #===================== Mybatis-plus 配置 =====================
+
+mybatis-plus:
+  configuration:
+    #在映射实体或者属性时，将数据库中表名和字段名中的下划线去掉，按照驼峰命名法映射
+    map-underscore-to-camel-case: true
+    #日志输出到控制台
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    db-config:
+      # 给所有列名统一套反引号
+      column-format: "`%s`"
+      #主键id设置为自增的形式
+      id-type: AUTO
+    #id-type: ASSIGN_ID（雪花算法生成的ID，分布式系统内保证ID的唯一性和有序性）
+
+
+sa-token:
+  # token 名称（同时也是 cookie 名称）
+  token-name: Authorization
+  # token 有效期（单位：秒） 默认30天，-1 代表永久有效
+  timeout: 2592000
+  # token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
+  active-timeout: -1
+  # 是否允许同一账号多地同时登录 （为 true 时允许一起登录, 为 false 时新登录挤掉旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token, 为 false 时每次登录新建一个 token）
+  is-share: true
+  # token 风格（默认可取值：uuid、simple-uuid、random-32、random-64、random-128、tik）
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: true
+
+knife4j:
+  enable: true
+

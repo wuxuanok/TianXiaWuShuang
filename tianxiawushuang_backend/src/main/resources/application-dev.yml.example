@@ -1,0 +1,27 @@
+# 本地开发环境变量示例（dev）
+SERVER_PORT: 8080
+
+# MySQL（本地 docker 容器）
+SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/a_recruit_dev?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+SPRING_DATASOURCE_USERNAME: root
+SPRING_DATASOURCE_PASSWORD:
+
+# Redis（本地 docker 容器）
+SPRING_REDIS_HOST: localhost
+SPRING_REDIS_PORT: 6379
+SPRING_REDIS_PASSWORD:
+SPRING_REDIS_DATABASE: 1
+SPRING_REDIS_TIMEOUT: 3000
+
+# OSS（开发桶，可复用测试桶）
+ALIYUN_OSS_ENDPOINT: oss-cn-shanghai.aliyuncs.com
+ALIYUN_OSS_BUCKET_NAME: dev-bucket
+ALIYUN_OSS_ACCESS_KEY_ID: your-dev-access-key
+ALIYUN_OSS_ACCESS_KEY_SECRET: your-dev-secret
+
+# SSL
+SERVER_SSL_ENABLED: true
+SERVER_SSL_KEY_STORE: classpath:keystore.p12
+SERVER_SSL_KEY_STORE_PASSWORD: YOUR_PASSWORD
+SERVER_SSL_KEY_STORE_TYPE: PKCS12
+SERVER_SSL_KEY_ALIAS: tomcat

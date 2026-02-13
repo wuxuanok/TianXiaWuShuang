@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tianxiawushuang.mapper.LikeMapper">
+    
+    <!-- 获取点赞数总和 -->
+    <select id="getLikeCount" resultType="java.lang.Integer">
+        SELECT COALESCE(SUM(like_count), 0) FROM `like`
+    </select>
+    
+    <!-- 检查用户是否已经存在 -->
+    <select id="checkUserLiked" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM `like` WHERE user_identifier = #{userIdentifier}
+    </select>
+    
+    <!-- 添加点赞（如果用户存在则更新点赞次数，否则插入新记录） -->
+    <insert id="addLike" parameterType="java.lang.String">
+        INSERT INTO `like` (user_identifier, like_count) VALUES (#{userIdentifier}, 1)
+        ON DUPLICATE KEY UPDATE like_count = like_count + 1
+    </insert>
+    
+</mapper>
